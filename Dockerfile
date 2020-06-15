@@ -1,6 +1,6 @@
 FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/nginx-template.conf
+ENV URL=http://willou.com/
 
 RUN apk update && apk upgrade && apk add bash ngrep curl dumb-init openssl
 
@@ -8,6 +8,9 @@ RUN openssl req -x509 -nodes -days 365 -subj "/C=CA/ST=QC/O=Company, Inc./CN=ngr
 
 EXPOSE 80 443
 
+COPY nginx.conf /etc/nginx/nginx-template.conf
+COPY entrypoint.sh /entrypoint.sh
+
 CMD ["/usr/bin/dumb-init", "--",                                                                    \
      "bash", "-c",                                                                                  \
-     "envsubst < /etc/nginx/nginx-template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
+     "/entrypoint.sh"]
